@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
 require('dotenv').config();
+const cors = require('cors');
 
 // Mongoose configuration
 mongoose.set('strictQuery', true);
@@ -12,6 +13,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended:true}));
+app.use(cors());
 
 // Mongoose connection 
 mongoose.connect(process.env.MONGO_URI)
@@ -48,7 +50,7 @@ app.get('/saved-conversions', async (req, res) => {
     res.status(200).json(saved);
 });
 
-app.post('/post-conversions', async (req, res) => {
+app.post('/saved-conversions', async (req, res) => {
     const {value, unit, valueConverted, unitConverted} = req.body;
 
     const entry = await Saved.create({value, unit, valueConverted, unitConverted});
@@ -60,7 +62,7 @@ app.post('/post-conversions', async (req, res) => {
     }
 });
 
-app.delete('/delete-conversion', async (req, res) => {
+app.delete('/saved-conversions/:id', async (req, res) => {
     const {id} = req.params;
 
     if(!mongoose.Types.ObjectId.isValid(id)){
